@@ -8,9 +8,13 @@ from selenium.webdriver.common.by import By
 from imgurpython import ImgurClient
 import configparser
 
+import os
+
 def authenticate():
     config = configparser.ConfigParser()
-    config.read('auth.ini')
+
+    my_ini = find_file_path('auth.ini')
+    config.read(my_ini)
 
     client_id = config.get('credentials', 'client_id')
     client_secret = config.get('credentials', 'client_secret')
@@ -21,8 +25,8 @@ def authenticate():
     client = ImgurClient(client_id, client_secret)
 
     authorization_url = client.get_auth_url('pin')
-
-    driver = webdriver.Chrome(executable_path='C:\\Users\\Ryan Howe\\Documents\\Python\\Shower\\chromedriver.exe')
+    my_drive = find_file_path("chromedriver.exe")
+    driver = webdriver.Chrome(executable_path=my_drive)
     driver.get(authorization_url)
 
     username = driver.find_element_by_xpath('//*[@id="username"]')
@@ -51,4 +55,15 @@ def authenticate():
     return client
 
 
+def find_file_path(my_str):
 
+    cwd = os.getcwd()
+
+    # r=root, d=directories, f = files
+    my_file = ""
+    for root, dirs, files in os.walk(cwd):
+        for file in files:
+            if file.endswith(my_str):
+                my_file = os.path.join(root, file)
+
+    return my_file
